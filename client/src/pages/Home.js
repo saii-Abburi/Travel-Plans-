@@ -13,7 +13,7 @@ import { addRecentlyViewed } from "../utils/recentlyViewed";
 const REVIEWS = [
   {
     stars: "★★★★★",
-    quote: `"PackGo turned our anniversary trip into something we'll tell grandkids about. Every single detail was perfect — from the sunrise hike in Santorini to the candlelit dinner by the Aeg[...]
+    quote: `"PackGo turned our anniversary trip into something we'll tell grandkids about. Every single detail was perfect — from the sunrise hike in Santorini to the candlelit dinner by the Aegean."`,
     avatar: "PS",
     name: "Priya Sharma",
     loc: "Mumbai, India",
