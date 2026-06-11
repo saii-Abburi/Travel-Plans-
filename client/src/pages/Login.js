@@ -19,74 +19,56 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LoginIcon from "@mui/icons-material/Login";
 import PrimaryButton from "../components/PrimaryButton";
-
+ 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
+ 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+ 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
+    if (isAuthenticated) navigate("/dashboard");
   }, [isAuthenticated, navigate]);
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
+    setFormData((prev) => ({ ...prev, [name]: value }));
+ 
     if (name === "email") {
-      if (
-        value &&
-        !/^[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-          value,
-        )
-      ) {
-        setErrors((prev) => ({ ...prev, email: "Please enter a valid email" }));
-      } else {
-        setErrors((prev) => ({ ...prev, email: "" }));
-      }
+      setErrors((prev) => ({
+        ...prev,
+        email:
+          value &&
+          !/^[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+            ? "Please enter a valid email"
+            : "",
+      }));
     } else if (name === "password") {
-      if (!value || value.trim() === "") {
-        setErrors((prev) => ({ ...prev, password: "Password is required" }));
-      } else {
-        setErrors((prev) => ({ ...prev, password: "" }));
-      }
+      setErrors((prev) => ({
+        ...prev,
+        password: !value || value.trim() === "" ? "Password is required" : "",
+      }));
     }
   };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
+ 
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
+ 
   const validateForm = () => {
+    const tempErrors = { email: "", password: "" };
     let isValid = true;
-    let tempErrors = { email: "", password: "" };
-
+ 
     if (
       !formData.email ||
-      !/^[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-        formData.email,
-      )
+      !/^[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)
     ) {
       tempErrors.email = "Please enter a valid email";
       isValid = false;
@@ -95,117 +77,222 @@ const Login = () => {
       tempErrors.password = "Password is required";
       isValid = false;
     }
-
+ 
     setErrors(tempErrors);
     return isValid;
   };
-
-  const isSignInDisabled = () => {
-    return (
-      !formData.email ||
-      formData.email.trim() === "" ||
-      !!errors.email ||
-      !formData.password ||
-      formData.password.trim() === "" ||
-      !!errors.password
-    );
-  };
-
+ 
+  const isSignInDisabled = () =>
+    !formData.email ||
+    formData.email.trim() === "" ||
+    !!errors.email ||
+    !formData.password ||
+    formData.password.trim() === "" ||
+    !!errors.password;
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      dispatch(login(formData, navigate));
-    }
+    if (validateForm()) dispatch(login(formData, navigate));
   };
-
-  const handleGoogleSuccess = (CredentialResponse) => {
-    dispatch(googleLogin(CredentialResponse, navigate));
+ 
+  const handleGoogleSuccess = (credentialResponse) => {
+    dispatch(googleLogin(credentialResponse, navigate));
   };
-
+ 
   return (
     <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
-        backgroundColor: theme.palette.background.default,
+        alignItems: "center",
+        justifyContent: "center",
+        gap: { md: 4, lg: 5 },
+        px: { xs: 2, sm: 3, md: 4 },
+        py: 3,
+        bgcolor: "background.default",
       }}
     >
+      {/* ── Left: Hero image panel ── */}
       {!isMobile && (
         <Box
           sx={{
-            flex: 1,
+            flex: "0 0 55%",
+            maxWidth: "55%",
+            height: "84vh",
+            maxHeight: 860,
+            borderRadius: 5,
+            overflow: "hidden",
+            position: "relative",
             backgroundImage:
-              "url(https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=1887&auto=format&fit=crop)",
+              "url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop)",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            alignSelf: "flex-start",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
+            boxShadow: "0 18px 48px rgba(15, 23, 42, 0.20)",
           }}
         >
+          {/* Overlay */}
           <Box
             sx={{
               position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              backdropFilter: "blur(2px)",
+              inset: 0,
+              background:
+                "linear-gradient(155deg, rgba(10,18,35,0.68) 0%, rgba(20,30,55,0.58) 50%, rgba(10,18,35,0.86) 100%)",
             }}
           />
-          <Box sx={{ position: "relative", p: 6, color: "white" }}>
-            <Typography
-              variant="h3"
-              component="h1"
-              sx={{ fontWeight: 700, mb: 2 }}
-            >
-              PackGo
-            </Typography>
-            <Typography variant="h5" sx={{ mb: 4, maxWidth: "80%" }}>
-              Your ultimate companion for discovering and planning your dream
-              adventures
-            </Typography>
+ 
+          {/* Text content */}
+          <Box
+            sx={{
+              position: "relative",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              p: { md: 4, lg: 5 },
+              color: "white",
+            }}
+          >
+            <Box>
+              <Typography
+                variant="overline"
+                sx={{ letterSpacing: 2.8, opacity: 0.82, display: "block", mb: 1.5 }}
+              >
+                Travel planning made simple
+              </Typography>
+              <Typography
+                variant="h3"
+                component="h1"
+                sx={{ fontWeight: 800, lineHeight: 1.18, mb: 1.5 }}
+              >
+                Plan your next trip with PackGo.
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ maxWidth: 400, lineHeight: 1.65, opacity: 0.9 }}
+              >
+                Track budgets, organize packing lists, and turn ideas into a
+                ready-to-follow itinerary — all in one place.
+              </Typography>
+            </Box>
+ 
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.2 }}>
+              {["Budget planner", "Packing checklist", "Trip reminders"].map((item) => (
+                <Box
+                  key={item}
+                  sx={{
+                    px: 1.8,
+                    py: 0.9,
+                    borderRadius: 999,
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                    backdropFilter: "blur(8px)",
+                    fontSize: "0.875rem",
+                    color: "white",
+                  }}
+                >
+                  {item}
+                </Box>
+              ))}
+            </Box>
           </Box>
         </Box>
       )}
-
+ 
+      {/* ── Right: Form panel ── */}
       <Box
         sx={{
-          flex: 1,
+          flex: isMobile ? "1 1 auto" : "0 0 45%",
+          maxWidth: isMobile ? "100%" : "45%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          p: 4,
+          minHeight: { xs: "100vh", md: "84vh" },
+          maxHeight: { md: 860 },
+          py: { xs: 4, md: 0 },
+          px: { xs: 0, sm: 2 },
         }}
       >
-        <Box sx={{ maxWidth: 480, width: "100%" }}>
-          <Box sx={{ textAlign: "center", mb: 5 }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-              Welcome Back
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Sign in to continue to PackGo
-            </Typography>
-          </Box>
-
-          <Paper
-            elevation={isMobile ? 1 : 0}
+        {/* Inner content — constrained width */}
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 440,
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
+          {/* Top bar: back button + brand */}
+          <Box
             sx={{
-              p: 4,
-              borderRadius: 4,
-              border: !isMobile ? "1px solid" : "none",
-              borderColor: "divider",
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              mb: { xs: 3, sm: 4 },
             }}
           >
-            <form onSubmit={handleSubmit}>
+            <IconButton
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              size="small"
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+                boxShadow: 1,
+                "&:hover": { bgcolor: "action.hover" },
+              }}
+            >
+              <ArrowBackIcon fontSize="small" />
+            </IconButton>
+ 
+            <Link
+              component={RouterLink}
+              to="/"
+              underline="none"
+              sx={{
+                fontWeight: 800,
+                color: "text.primary",
+                fontSize: "1.02rem",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+              }}
+            >
+              PackGo
+            </Link>
+          </Box>
+ 
+          {/* Heading */}
+          <Box sx={{ mb: 3.5 }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ fontWeight: 800, lineHeight: 1.2, mb: 0.75 }}
+            >
+              Welcome back
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+              Sign in to continue planning your next adventure.
+            </Typography>
+          </Box>
+ 
+          {/* Card */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 3, sm: 3.5 },
+              borderRadius: 4,
+              border: "1px solid",
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.07)",
+            }}
+          >
+            <Box component="form" onSubmit={handleSubmit} noValidate>
               <TextField
-                margin="normal"
+                margin="none"
                 required
                 fullWidth
                 id="email"
@@ -217,10 +304,11 @@ const Login = () => {
                 onChange={handleChange}
                 error={!!errors.email}
                 helperText={errors.email}
-                sx={{ mb: 3 }}
+                sx={{ mb: 2.5 }}
               />
+ 
               <TextField
-                margin="normal"
+                margin="none"
                 required
                 fullWidth
                 name="password"
@@ -237,23 +325,21 @@ const Login = () => {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="toggle password visibility"
+                          aria-label="Toggle password visibility"
                           onClick={toggleShowPassword}
                           edge="end"
+                          size="small"
                         >
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
+                          {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                         </IconButton>
                       </InputAdornment>
                     ),
                   },
                 }}
-                sx={{ mb: 1 }}
+                sx={{ mb: 1.5 }}
               />
-
+ 
+              {/* Remember me + Forgot password */}
               <Box
                 sx={{
                   display: "flex",
@@ -268,100 +354,85 @@ const Login = () => {
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                       color="primary"
+                      size="small"
                     />
                   }
-                  label="Remember me"
+                  label={
+                    <Typography variant="body2" color="text.secondary">
+                      Remember me
+                    </Typography>
+                  }
                 />
                 <Link
                   component={RouterLink}
                   to="/forgot-password"
                   variant="body2"
+                  sx={{ fontWeight: 500 }}
                 >
                   Forgot password?
                 </Link>
               </Box>
-
+ 
+              {/* Submit */}
               <PrimaryButton
                 type="submit"
                 fullWidth
                 size="large"
                 disabled={isSignInDisabled()}
-                sx={{ py: 1.5, mb: 3, borderRadius: 2, fontWeight: 600 }}
                 endIcon={<LoginIcon />}
+                sx={{ py: 1.5, mb: 2.5, borderRadius: 2, fontWeight: 700, fontSize: "0.95rem" }}
               >
                 Sign In
               </PrimaryButton>
-
-              <Divider sx={{ my: 3 }}>
-                <Typography variant="body2" color="text.secondary">
-                  OR
+ 
+              {/* Divider */}
+              <Divider sx={{ mb: 2.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  or continue with
                 </Typography>
               </Divider>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 2,
-                  mb: 3,
-                }}
-              >
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <GoogleLogin
-                    theme="outlined"
-                    width={isMobile ? 360 : 500}
-                    shape="pill"
-                    text="continue_with"
-                    size="large"
-                    sx={{
-                      borderRadius: 2,
-                      py: 1,
-
-                      color: "#3f51b5",
-                      borderColor: "#3f51b5",
-                      "&:hover": {
-                        backgroundColor: "rgba(66,133,244,0.08)",
-                        borderColor: "#3f51b5",
-                      },
-                      "&:active": {
-                        backgroundColor: "#3f51b5",
-                        color: "#fff",
-                        transform: "scale(0.98)",
-                      },
-                    }}
-                    onSuccess={handleGoogleSuccess}
-                    onError={() => console.log("Google Login failed")}
-                    useOneTap
-                  />
-                </Box>
+ 
+              {/* Google login */}
+              <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                <GoogleLogin
+                  theme="outlined"
+                  width="100%"
+                  shape="pill"
+                  text="continue_with"
+                  size="large"
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => console.log("Google Login failed")}
+                  useOneTap
+                />
               </Box>
-            </form>
+            </Box>
           </Paper>
-
-          <Box sx={{ mt: 4, textAlign: "center" }}>
-            <Typography variant="body2">
+ 
+          {/* Sign up link */}
+          <Box sx={{ textAlign: "center", mt: 3 }}>
+            <Typography variant="body2" color="text.secondary">
               Don't have an account?{" "}
               <Link
                 component={RouterLink}
                 to="/register"
-                variant="subtitle2"
-                sx={{ fontWeight: 600 }}
+                variant="body2"
+                sx={{ fontWeight: 700, color: "primary.main" }}
               >
                 Get started
               </Link>
             </Typography>
           </Box>
-        </Box>
-
-        <Box sx={{ mt: "auto", textAlign: "center", pt: 4 }}>
-          <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} PackGo. All rights reserved.
-          </Typography>
+ 
+          {/* Footer */}
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="caption" color="text.disabled">
+              © {new Date().getFullYear()} PackGo. All rights reserved.
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
   );
 };
-
+ 
 export default Login;
